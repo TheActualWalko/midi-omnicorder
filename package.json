@@ -1,0 +1,22 @@
+{
+  "name": "midi-omnicorder",
+  "version": "1.0.0",
+  "description": "Background task records all midi input, 24/7",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheActualWalko/midi-omnicorder.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheActualWalko/midi-omnicorder/issues"
+  },
+  "homepage": "https://github.com/TheActualWalko/midi-omnicorder#readme",
+  "dependencies": {
+    "midi": "^0.9.5"
+  }
+}
