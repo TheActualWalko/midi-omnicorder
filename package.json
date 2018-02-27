@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/TheActualWalko/midi-omnicorder#readme",
   "dependencies": {
+    "forever": "^0.15.3",
+    "json-midi-encoder-worker": "^2.1.14",
     "midi": "^0.9.5"
   }
 }
