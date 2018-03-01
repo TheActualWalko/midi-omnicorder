@@ -42,8 +42,9 @@ module.exports = (eventLog) => {
         ]
       ]
     };
-    console.log(JSON.stringify(output,null,2));
-    fs.writeFileSync(`output/${name}-${new Date().getTime()}.mid`, Buffer.from(encode(output)));
-    console.log('wrote file!');
+    //console.log(JSON.stringify(output,null,2));
+    const path = `output/${name}_${new Date().getTime()}.mid`;
+    fs.writeFileSync(path, Buffer.from(encode(output)));
+    console.log('wrote file to', path);
   });
 };

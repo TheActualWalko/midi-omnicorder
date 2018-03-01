@@ -8,7 +8,7 @@ const formatName = (index, name, nameIndex) => {
   }
 }
 
-const lastOutput = {};
+let lastOutput = {};
 
 const auxInput = new MIDI.input();
 
@@ -28,5 +28,17 @@ module.exports = (namesOnly) => {
     output[finalName].openPort(i);
   }
 
+  Object.keys(lastOutput).forEach((k) => {
+    lastOutput[k].closePort();
+  });
+  lastOutput = output;
+
   return output;
 }
+
+process.on('exit', () => {
+  auxInput.closePort();
+  Object.keys(lastOutput).forEach((k) => {
+    lastOutput[k].closePort();
+  });
+});

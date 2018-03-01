@@ -24,6 +24,8 @@
     "json-midi-encoder-worker": "^2.1.14",
     "menubar": "^5.2.3",
     "midi": "^0.9.5",
+    "moment": "^2.20.1",
+    "recursive-readdir": "^2.2.2",
     "usb-detection": "^2.1.0"
   }
 }

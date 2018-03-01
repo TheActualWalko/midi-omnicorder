@@ -6,7 +6,12 @@ html, body {
   color: #262626;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }
 
 ul {
@@ -18,6 +23,7 @@ ul {
 
 ul:first-of-type {
   border-top: none;
+  padding: 7px 0 5px 0;
 }
 
 li {
@@ -53,6 +59,20 @@ li.disabled:hover {
   vertical-align: middle;
   margin-top: -2px;
   margin-right: 8px;
+}
+
+.files li {
+  position: relative;
+}
+
+.files li .file-dragger {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
 }
 
 .files span {
