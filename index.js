@@ -1,6 +1,4 @@
-
-
-const { ipcMain } = require('electron');
+const { ipcMain, shell } = require('electron');
 const readdir = require('recursive-readdir');
 const Path = require('path');
 const fs = require('fs');
@@ -148,6 +146,9 @@ mb.on('after-create-window', () => {
     mb.app.quit();
     usbDetect.stopMonitoring();
     process.exitCode = 0;
+  });
+  ipcMain.on('open-midi-folder', (event, arg) => {
+    shell.openItem(Path.join(__dirname, 'output'))
   });
 });
 

@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const {ipcRenderer} = require('electron');
+const { ipcRenderer } = require('electron');
 const moment = require('moment');
 
 const friendlyDate = (date, precisionMode) => {
@@ -100,6 +100,10 @@ $(() => {
     } else if (recording === true) {
       ipcRenderer.send('stop-recording');
     }
+  });
+
+  $("#open-midi-folder").click(() => {
+    ipcRenderer.send('open-midi-folder');
   });
 
   setInterval(updateRecordingMessage, 500);
