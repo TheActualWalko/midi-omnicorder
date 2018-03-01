@@ -10,8 +10,9 @@ const formatName = (index, name, nameIndex) => {
 
 const lastOutput = {};
 
+const auxInput = new MIDI.input();
+
 module.exports = (namesOnly) => {
-  const auxInput = new MIDI.input();
   const portCount = auxInput.getPortCount();
 
   const output = {};
@@ -26,8 +27,6 @@ module.exports = (namesOnly) => {
     output[finalName] = new MIDI.input();
     output[finalName].openPort(i);
   }
-
-  auxInput.closePort();
 
   return output;
 }
