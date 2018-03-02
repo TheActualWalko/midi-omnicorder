@@ -88,7 +88,7 @@ $(() => {
     } else if (transportStatus === TRANSPORT_STATUS.STOPPED) {
       ipcRenderer.send('start-recording');
     } else if (transportStatus === TRANSPORT_STATUS.RECORDING) {
-      ipcRenderer.send('start-recording');
+      ipcRenderer.send('stop-recording');
     } else {
       throw new Error(`Invalid transport status ${transportStatus}`);
     }
