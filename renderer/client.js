@@ -75,6 +75,9 @@ const swapFiles = (lastFiles, files) => {
 }
 
 $(() => {
+
+  // Initial state
+
   let currentFiles = [];
   let transportStatus = TRANSPORT_STATUS.IDLE;
   let recordingStartTime;
@@ -87,17 +90,6 @@ $(() => {
     e.preventDefault();
     ipcRenderer.send('ondragstart', $(e.currentTarget).attr('data-path'));
   });
-
-  setInterval(() =>
-    setRecordingMessage(
-      makeRecordingMessage(
-        Date.now(),
-        transportStatus,
-        recordingStartTime
-      )
-    ),
-    RECORDING_MESSAGE_UPDATE_INTERVAL_MS
-  );
 
   // State changes
 
@@ -136,7 +128,21 @@ $(() => {
     }
   });
 
+  // Recording timer updates
+
+  setInterval(() =>
+    setRecordingMessage(
+      makeRecordingMessage(
+        Date.now(),
+        transportStatus,
+        recordingStartTime
+      )
+    ),
+    RECORDING_MESSAGE_UPDATE_INTERVAL_MS
+  );
+
   // Connect to main process
 
   ipcRenderer.send('initialize');
+
 });
