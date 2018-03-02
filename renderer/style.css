@@ -1,0 +1,98 @@
+html, body {
+  background: #F6F6F6;
+  font-family: 'SF UI Display';
+  font-size: 13px;
+  line-height: 14px;
+  color: #262626;
+  margin: 0;
+  padding: 0;
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+ul {
+  list-style-type: none;
+  border-top: 1px solid #cbcbcb;
+  margin: 0;
+  padding: 6px 0;
+}
+
+ul:first-of-type {
+  border-top: none;
+  padding: 7px 0 5px 0;
+}
+
+li {
+  padding: 3px 20px;
+}
+
+li:hover {
+  background-image: linear-gradient(#0069d8, #0070ec);
+  cursor: pointer;
+  color: white;
+}
+
+li.disabled {
+  color: #989898;
+}
+
+li.disabled:hover {
+  background-image: none;
+  color: #989898;
+  cursor: default;
+}
+
+.highlight {
+  background-color: #ffffff;
+}
+
+.files {
+  overflow: hidden;
+  height: 271px;
+}
+
+.files img {
+  width: 16px;
+  height: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  vertical-align: middle;
+  margin-top: -2px;
+  margin-right: 8px;
+}
+
+.files li {
+  position: relative;
+}
+
+.files li .file-dragger {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.files span {
+  display: inline-block;
+  overflow: ellipsis;
+}
+
+.files .file-name {
+  width: 232px;
+  margin-right: 8px;
+}
+
+.files .date-created {
+  width: 150px;
+  color: #989898;
+}
+
+.files li:hover .date-created {
+  color: #ffffff;
+}

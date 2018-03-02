@@ -5,8 +5,6 @@ const fs = require('fs');
 const menubar = require('menubar');
 const usbDetect = require('usb-detection');
 
-
-
 // midi spinup
 const getInputs = require('./getInputs');
 const writeMidi = require('./writeMidi');
@@ -63,8 +61,8 @@ usbDetect.on('change', () => setTimeout(refreshInputs, 1500));
 // electron spinup
 
 const mb = menubar({
-  icon: Path.join(__dirname, '/Icon.png'),
-  index: Path.join('file://', __dirname, 'index.html'),
+  icon: Path.join(__dirname, 'icons/menu.png'),
+  index: Path.join('file://', __dirname, 'renderer/index.html'),
   width: 480,
   height: 402
 });
@@ -74,11 +72,11 @@ mb.on('ready', () => {
 });
 
 mb.on('show', () => {
-  mb.tray.setImage(`${process.cwd()}/Icon-Focus.png`);
+  mb.tray.setImage(Path.join(__dirname, 'icons/menu-focus.png'));
 });
 
 mb.on('hide', () => {
-  mb.tray.setImage(`${process.cwd()}/Icon.png`);
+  mb.tray.setImage(Path.join(__dirname, 'icons/menu.png'));
 });
 
 const sortFiles = (a, b) => {
@@ -138,7 +136,7 @@ mb.on('after-create-window', () => {
     ipcMain.on('ondragstart', (event, path) => {
       event.sender.startDrag({
         file: path,
-        icon: Path.join(__dirname, 'midi-icon.png')
+        icon: Path.join(__dirname, 'icons/midi.png')
       })
     })
   });
