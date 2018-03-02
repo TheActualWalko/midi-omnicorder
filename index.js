@@ -122,7 +122,7 @@ const sendState = (sender) => {
 }
 
 mb.on('after-create-window', () => {
-  mb.window.openDevTools();
+  // mb.window.openDevTools();
   ipcMain.on('initialize', (event, arg) => {
     sendState(event.sender);
     setInterval(() => sendState(event.sender), 500);
