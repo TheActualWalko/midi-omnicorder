@@ -2,6 +2,7 @@ const $ = require('jquery');
 const { ipcRenderer } = require('electron');
 const moment = require('moment');
 
+const RECORDING_MESSAGE_UPDATE_INTERVAL_MS = 500;
 const TRANSPORT_STATUS = {
   IDLE: 'IDLE',
   RECORDING: 'RECORDING',
@@ -78,21 +79,10 @@ $(() => {
   let transportStatus = TRANSPORT_STATUS.IDLE;
   let recordingStartTime;
 
-  // Event Listeners
+  // Event listeners
 
   $('#quit').click(() => ipcRenderer.send('quit'));
   $("#open-midi-folder").click(() => ipcRenderer.send('open-midi-folder'));
-  $('#toggle-recording').click(() => {
-    if (transportStatus === TRANSPORT_STATUS.IDLE) {
-      return;
-    } else if (transportStatus === TRANSPORT_STATUS.STOPPED) {
-      ipcRenderer.send('start-recording');
-    } else if (transportStatus === TRANSPORT_STATUS.RECORDING) {
-      ipcRenderer.send('stop-recording');
-    } else {
-      throw new Error(`Invalid transport status ${transportStatus}`);
-    }
-  });
   $("#file-list").on('click dragstart', '.file-dragger', (e) => {
     e.preventDefault();
     ipcRenderer.send('ondragstart', $(e.currentTarget).attr('data-path'));
@@ -100,37 +90,53 @@ $(() => {
 
   setInterval(() =>
     setRecordingMessage(
-      makeRecordingMessage(Date.now(), transportStatus, recordingStartTime)
+      makeRecordingMessage(
+        Date.now(),
+        transportStatus,
+        recordingStartTime
+      )
     ),
-    500
+    RECORDING_MESSAGE_UPDATE_INTERVAL_MS
   );
 
-  setRecordingMessage(
-    makeRecordingMessage(Date.now(), transportStatus, recordingStartTime)
-  );
+  // State changes
 
   ipcRenderer.on('state', (event, payload) => {
     swapFiles(currentFiles, payload.files);
+
     currentFiles = payload.files;
     transportStatus = payload.transportStatus;
     recordingStartTime = payload.recordingStartTime;
 
     if (transportStatus === TRANSPORT_STATUS.IDLE) {
+
       $("#toggle-recording")
+        .off('click')
         .addClass('disabled')
         .text('Please wait...');
+
     } else if (transportStatus === TRANSPORT_STATUS.STOPPED) {
+
       $("#toggle-recording")
+        .off('click')
+        .click(() => ipcRenderer.send('start-recording'))
         .removeClass('disabled')
         .text('Start Recording');
+
     } else if (transportStatus === TRANSPORT_STATUS.RECORDING) {
+
       $("#toggle-recording")
+        .off('click')
+        .click(() => ipcRenderer.send('stop-recording'))
         .removeClass('disabled')
         .text('Stop Recording');
+
     } else {
       throw new Error(`Invalid transport status ${transportStatus}`);
     }
   });
+
+  // Connect to main process
 
   ipcRenderer.send('initialize');
 });

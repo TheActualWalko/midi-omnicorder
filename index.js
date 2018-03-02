@@ -123,9 +123,10 @@ const sendState = (sender) => {
 
 mb.on('after-create-window', () => {
   // mb.window.openDevTools();
+  let stateInterval;
   ipcMain.on('initialize', (event, arg) => {
     sendState(event.sender);
-    setInterval(() => sendState(event.sender), 500);
+    stateInterval = setInterval(() => sendState(event.sender), 500);
   });
   ipcMain.on('start-recording', (event, arg) => {
     transportStatus = TRANSPORT_STATUS.RECORDING;
@@ -149,6 +150,7 @@ mb.on('after-create-window', () => {
     mb.app.quit();
     usbDetect.stopMonitoring();
     process.exitCode = 0;
+    clearInterval(stateInterval);
   });
   ipcMain.on('open-midi-folder', (event, arg) => {
     shell.openItem(Path.join(__dirname, 'output'))
