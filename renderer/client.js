@@ -2,6 +2,12 @@ const $ = require('jquery');
 const { ipcRenderer } = require('electron');
 const moment = require('moment');
 
+const TRANSPORT_STATUS = {
+  IDLE: 'IDLE',
+  RECORDING: 'RECORDING',
+  STOPPED: 'STOPPED'
+};
+
 const MINUTE_SECONDS = 60;
 const HOUR_SECONDS = MINUTE_SECONDS * 60;
 const DAY_SECONDS = HOUR_SECONDS * 24;
@@ -46,13 +52,15 @@ const makeFileListItem = (now, {filename, dateCreated, path}) => `
   </li>
 `;
 
-const makeRecordingMessage = (now, recording, recordingStartTime) => {
-  if (recording === true) {
-    return `<span>MIDICatch: <strong>Recording</strong> since <strong>${preciseTimeAgo(now, recordingStartTime)}</strong> ago.</span>`;
-  } else if (recording === false) {
-    return `<span>MIDICatch: <strong>Recording stopped.</strong></span>`;
-  } else {
+const makeRecordingMessage = (now, transportStatus, recordingStartTime) => {
+  if (transportStatus === TRANSPORT_STATUS.IDLE) {
     return `<span>MIDICatch: <strong>Initializing...</strong></span>`
+  } else if (transportStatus === TRANSPORT_STATUS.STOPPED) {
+    return `<span>MIDICatch: <strong>Recording stopped.</strong></span>`;
+  } else if (transportStatus === TRANSPORT_STATUS.RECORDING) {
+    return `<span>MIDICatch: <strong>Recording</strong> since <strong>${preciseTimeAgo(now, recordingStartTime)}</strong> ago.</span>`;
+  } else {
+    throw new Error(`Invalid transport status ${transportStatus}`);
   }
 }
 
@@ -67,7 +75,7 @@ const swapFiles = (lastFiles, files) => {
 
 $(() => {
   let currentFiles = [];
-  let recording;
+  let transportStatus = TRANSPORT_STATUS.IDLE;
   let recordingStartTime;
 
   // Event Listeners
@@ -75,8 +83,15 @@ $(() => {
   $('#quit').click(() => ipcRenderer.send('quit'));
   $("#open-midi-folder").click(() => ipcRenderer.send('open-midi-folder'));
   $('#toggle-recording').click(() => {
-    if (recording === undefined) return;
-    ipcRenderer.send(recording ? 'stop-recording' : 'start-recording');
+    if (transportStatus === TRANSPORT_STATUS.IDLE) {
+      return;
+    } else if (transportStatus === TRANSPORT_STATUS.STOPPED) {
+      ipcRenderer.send('start-recording');
+    } else if (transportStatus === TRANSPORT_STATUS.RECORDING) {
+      ipcRenderer.send('start-recording');
+    } else {
+      throw new Error(`Invalid transport status ${transportStatus}`);
+    }
   });
   $("#file-list").on('click dragstart', '.file-dragger', (e) => {
     e.preventDefault();
@@ -85,26 +100,35 @@ $(() => {
 
   setInterval(() =>
     setRecordingMessage(
-      makeRecordingMessage(Date.now(), recording, recordingStartTime)
+      makeRecordingMessage(Date.now(), transportStatus, recordingStartTime)
     ),
     500
   );
 
   setRecordingMessage(
-    makeRecordingMessage(Date.now(), recording, recordingStartTime)
+    makeRecordingMessage(Date.now(), transportStatus, recordingStartTime)
   );
 
   ipcRenderer.on('state', (event, payload) => {
     swapFiles(currentFiles, payload.files);
     currentFiles = payload.files;
-    recording = payload.recording;
+    transportStatus = payload.transportStatus;
     recordingStartTime = payload.recordingStartTime;
 
-    $('#toggle-recording').text(recording !== false ? 'Stop Recording' : 'Start Recording');
-    if (recording === undefined) {
-      $("#toggle-recording").addClass('disabled');
+    if (transportStatus === TRANSPORT_STATUS.IDLE) {
+      $("#toggle-recording")
+        .addClass('disabled')
+        .text('Please wait...');
+    } else if (transportStatus === TRANSPORT_STATUS.STOPPED) {
+      $("#toggle-recording")
+        .removeClass('disabled')
+        .text('Start Recording');
+    } else if (transportStatus === TRANSPORT_STATUS.RECORDING) {
+      $("#toggle-recording")
+        .removeClass('disabled')
+        .text('Stop Recording');
     } else {
-      $("#toggle-recording").removeClass('disabled');
+      throw new Error(`Invalid transport status ${transportStatus}`);
     }
   });
 

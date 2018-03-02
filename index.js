@@ -5,13 +5,19 @@ const fs = require('fs');
 const menubar = require('menubar');
 const usbDetect = require('usb-detection');
 
+const TRANSPORT_STATUS = {
+  IDLE: 'IDLE',
+  RECORDING: 'RECORDING',
+  STOPPED: 'STOPPED'
+};
+
 // midi spinup
 const getInputs = require('./getInputs');
 const writeMidi = require('./writeMidi');
 let lastEventTime;
 let eventLog = {};
 let writeTimeout;
-let recording;
+let transportStatus = TRANSPORT_STATUS.IDLE;
 let recordingStartTime;
 
 const resetTimeout = () => {
@@ -32,7 +38,7 @@ const refreshInputs = () => {
 
   Object.keys(inputs).forEach((name) => {
     inputs[name].on('message', (deltaTime, message) => {
-      if (recording === false) {
+      if (transportStatus !== TRANSPORT_STATUS.RECORDING) {
         return;
       }
       resetTimeout();
@@ -51,12 +57,11 @@ const refreshInputs = () => {
 };
 
 refreshInputs();
-recording = true;
+transportStatus = TRANSPORT_STATUS.RECORDING;
 recordingStartTime = Date.now();
 
 usbDetect.startMonitoring();
 usbDetect.on('change', () => setTimeout(refreshInputs, 1500));
-
 
 // electron spinup
 
@@ -109,7 +114,7 @@ const getFiles = () => readdir('./output')
 const sendState = (sender) => {
   getFiles().then((files) => {
     sender.send('state', {
-      recording,
+      transportStatus,
       recordingStartTime,
       files
     });
@@ -117,19 +122,19 @@ const sendState = (sender) => {
 }
 
 mb.on('after-create-window', () => {
-  // mb.window.openDevTools();
+  mb.window.openDevTools();
   ipcMain.on('initialize', (event, arg) => {
     sendState(event.sender);
     setInterval(() => sendState(event.sender), 500);
   });
   ipcMain.on('start-recording', (event, arg) => {
-    recording = true;
+    transportStatus = TRANSPORT_STATUS.RECORDING;
     refreshInputs();
     recordingStartTime = Date.now();
     sendState(event.sender);
   });
   ipcMain.on('stop-recording', (event, arg) => {
-    recording = false;
+    transportStatus = TRANSPORT_STATUS.STOPPED;
     sendState(event.sender);
   });
   ipcMain.on('ondragstart', (event, arg) => {
