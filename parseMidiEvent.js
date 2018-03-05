@@ -64,6 +64,6 @@ module.exports = function (evt, offset, lastEvent) {
         throw new Error("Cannot parse a midi event with a type of \"" + statusByte + "\"");
     }
     event.channel = statusByte & 0x0F;
-    console.log(evt, offset, sanitizedOffset, event);
+    // console.log(evt, offset, sanitizedOffset, event);
     return { event: event, offset: sanitizedOffset };
 };

@@ -4,66 +4,25 @@ const Path = require('path');
 const fs = require('fs');
 const menubar = require('menubar');
 const usbDetect = require('usb-detection');
+const MIDIListener = require('./MIDIListener');
+const MIDIEventLog = require('./MIDIEventLog');
 
+const midiEventLog = new MIDIEventLog(5000);
+const midiListener = new MIDIListener((event) => midiEventLog.receiveEvent(event));
+
+usbDetect.startMonitoring();
+usbDetect.on('add', () => setTimeout(() => midiListener.updateInputs(), 1500));
+usbDetect.on('remove', () => setTimeout(() => midiListener.updateInputs(), 1500));
+
+// electron spinup
 const TRANSPORT_STATUS = {
   IDLE: 'IDLE',
   RECORDING: 'RECORDING',
   STOPPED: 'STOPPED'
 };
-
-// midi spinup
-const getInputs = require('./getInputs');
-const writeMidi = require('./writeMidi');
-let lastEventTime;
-let eventLog = {};
-let writeTimeout;
-let transportStatus = TRANSPORT_STATUS.IDLE;
-let recordingStartTime;
-
-const resetTimeout = () => {
-  if (writeTimeout) {
-    clearTimeout(writeTimeout);
-  }
-
-  writeTimeout = setTimeout(() => {
-    writeMidi(eventLog);
-    eventLog = {};
-    lastEventTime = null;
-  }, 5000);
-};
-
-const refreshInputs = () => {
-  const inputs = getInputs();
-  const lastEvtTime = {};
-
-  Object.keys(inputs).forEach((name) => {
-    inputs[name].on('message', (deltaTime, message) => {
-      if (transportStatus !== TRANSPORT_STATUS.RECORDING) {
-        return;
-      }
-      resetTimeout();
-      const now = new Date().getTime();
-      if (!eventLog[name]) {
-        eventLog[name] = [];
-      }
-      eventLog[name].push({
-        deltaTime: lastEventTime ? (now - lastEventTime) * (480/1000) : 1,
-        message
-      });
-      lastEventTime = now;
-    });
-  });
-  console.log('current inputs:', Object.keys(inputs));
-};
-
-refreshInputs();
 transportStatus = TRANSPORT_STATUS.RECORDING;
 recordingStartTime = Date.now();
 
-usbDetect.startMonitoring();
-usbDetect.on('change', () => setTimeout(refreshInputs, 1500));
-
-// electron spinup
 
 const mb = menubar({
   icon: Path.join(__dirname, 'icons/menu.png'),
@@ -73,17 +32,8 @@ const mb = menubar({
   preloadWindow: true
 });
 
-mb.on('ready', () => {
-  console.log('app is ready');
-});
-
-mb.on('show', () => {
-  mb.tray.setImage(Path.join(__dirname, 'icons/menu-focus.png'));
-});
-
-mb.on('hide', () => {
-  mb.tray.setImage(Path.join(__dirname, 'icons/menu.png'));
-});
+mb.on('show', () => mb.tray.setImage(Path.join(__dirname, 'icons/menu-focus.png')));
+mb.on('hide', () => mb.tray.setImage(Path.join(__dirname, 'icons/menu.png')));
 
 const sortFiles = (a, b) => {
   if (a.dateCreated < b.dateCreated) {
@@ -131,13 +81,13 @@ mb.on('after-create-window', () => {
   });
   ipcMain.on('start-recording', (event, arg) => {
     transportStatus = TRANSPORT_STATUS.RECORDING;
-    refreshInputs();
+    midiListener.enableRecording();
+    midiListener.updateInputs();
     recordingStartTime = Date.now();
-    sendState(event.sender);
   });
   ipcMain.on('stop-recording', (event, arg) => {
     transportStatus = TRANSPORT_STATUS.STOPPED;
-    sendState(event.sender);
+    midiListener.disableRecording();
   });
   ipcMain.on('ondragstart', (event, arg) => {
     ipcMain.on('ondragstart', (event, path) => {
@@ -159,7 +109,7 @@ mb.on('after-create-window', () => {
 });
 
 process.on('exit', () => {
-  mb.app.quit();
   usbDetect.stopMonitoring();
+  mb.app.quit();
 });
 

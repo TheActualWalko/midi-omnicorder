@@ -1,44 +1,45 @@
 const MIDI = require('midi');
-
-const formatName = (index, name, nameIndex) => {
-  if (nameIndex === 1) {
-    return `${index}_${name}`;
-  } else {
-    return `${index}_${name}_${nameIndex}`;
-  }
-}
-
-let lastOutput = {};
-
 const auxInput = new MIDI.input();
 
-module.exports = (namesOnly) => {
+const inputs = [];
+
+module.exports = () => {
   const portCount = auxInput.getPortCount();
 
-  const output = {};
+  console.log(portCount, inputs.length);
 
-  for (let i = 0; i < portCount; i ++) {
-    const name = auxInput.getPortName(i);
-    let nameIndex = 1;
-    while (!!output[formatName(i, name, nameIndex)]) {
-      nameIndex ++;
+  if (portCount > inputs.length) {
+    for (let i = inputs.length; i < portCount; i ++) {
+      const input = new MIDI.input();
+      input.openPort(i);
+      inputs.push(input);
+      console.log(`added input named ${input.getPortName(i)}`);
     }
-    const finalName = formatName(i, name, nameIndex)
-    output[finalName] = new MIDI.input();
-    output[finalName].openPort(i);
+  } else if (portCount < inputs.length) {
+    for (let i = inputs.length - 1; i >= portCount; i --) {
+      inputs[i].closePort();
+      console.log(`removed input at index ${i}`);
+    }
+    inputs.splice(portCount, inputs.length - portCount);
   }
 
-  Object.keys(lastOutput).forEach((k) => {
-    lastOutput[k].closePort();
-  });
-  lastOutput = output;
+  const nameCounts = {};
 
-  return output;
+  return inputs.map((input, index) => {
+    const rawName = input.getPortName(index);
+
+    if (nameCounts[rawName] === undefined) nameCounts[rawName] = 0;
+    nameCounts[rawName] ++;
+
+    const name = nameCounts[rawName] > 1
+      ? `${rawName} ${nameCounts[rawName]}`
+      : rawName;
+
+    return {input, name};
+  });
 }
 
 process.on('exit', () => {
   auxInput.closePort();
-  Object.keys(lastOutput).forEach((k) => {
-    lastOutput[k].closePort();
-  });
+  inputs.forEach((input) => input.closePort());
 });
