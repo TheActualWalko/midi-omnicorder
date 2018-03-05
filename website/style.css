@@ -1,0 +1,238 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+a, a:visited, a:link {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+h1,h2,h3,h4,h5 {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.constrain {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+header h1 {
+  font-size: 0;
+}
+
+.hero {
+  background-image: url(background.jpg);
+  padding: 0 60px;
+  background-size: cover;
+  background-position: 50% 57%;
+  position: relative;
+}
+
+.hero-loading-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  background-image: linear-gradient(-224deg, #1e13b0 0%, #007cff 100%);
+}
+
+.hero:before {
+  content: '';
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background-image: linear-gradient(90deg, rgba(2,117,251,0), rgba(2,117,251,0.5));
+  z-index: 20;
+}
+
+.hero h2 {
+  font-size: 49px;
+  line-height: 1.2;
+  font-weight: 700;
+  max-width: 720px;
+  margin-bottom: 30px;
+}
+
+.hero h3 {
+  font-size: 20px;
+  line-height: 1.6;
+  font-weight: 300;
+  max-width: 720px;
+  margin-bottom: 50px;
+}
+
+.hero header {
+  padding: 60px 0;
+}
+
+.hero header h1 {
+  display: inline-block;
+}
+
+.hero header nav {
+  float: right;
+  padding: 11px 0;
+}
+
+.hero header nav a+a {
+  margin-left: 30px;
+}
+
+.hero aside {
+  float: right;
+  margin-right: -34px;
+}
+
+.hero aside img {
+  max-width: 430px;
+  height: auto;
+  width: 100%;
+}
+
+.hero:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.hero .download {
+  padding-bottom: 100px;
+}
+
+button {
+  padding: 10px 20px;
+  border: 2px solid white;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 700;
+  background-color: transparent;
+  color: white;
+}
+
+button + button {
+  margin-left: 20px;
+}
+
+button.highlight {
+  background-color: white;
+  color: #191cb6;
+  box-shadow: 0 4px 13px rgba(0,0,0,0.3);
+}
+
+button svg {
+  vertical-align: middle;
+}
+
+button span {
+  display: inline-block;
+  margin-top: 6px;
+  margin-left: 12px;
+}
+
+@media screen and (max-width: 1120px) {
+  .hero h2 {
+    font-size: 40px;
+    max-width: 500px;
+    margin-bottom: 20px;
+  }
+  .hero h3 {
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+  .hero aside img {
+    max-width: 350px;
+  }
+  .hero .download {
+    padding-bottom: 80px;
+  }
+}
+
+.mobile-img {
+  display: none;
+}
+
+@media screen and (max-width: 960px) {
+  .hero aside {
+    position: absolute;
+    left: 585px;
+    width: 350px;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .hero:before {
+    display: none;
+  }
+  .hero aside {
+    display: none;
+  }
+  .hero main {
+    text-align: center;
+  }
+  .constrain {
+    max-width: 500px;
+  }
+  .mobile-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .hero {
+    padding: 0 30px;
+  }
+  .hero header {
+    padding: 30px 0 60px 0;
+  }
+  br {
+    display: none;
+  }
+  button {
+    display: block;
+    max-width: 320px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  button+button {
+    margin: 20px auto 0 auto;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .hero main {
+    text-align: left;
+  }
+  .mobile-img {
+    width: 120%;
+    position: relative;
+    left: -10%;
+  }
+  button svg {
+    margin: 0 auto;
+  }
+  button span {
+    display: block;
+  }
+}

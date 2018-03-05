@@ -69,7 +69,8 @@ const mb = menubar({
   icon: Path.join(__dirname, 'icons/menu.png'),
   index: Path.join('file://', __dirname, 'renderer/index.html'),
   width: 480,
-  height: 402
+  height: 402,
+  preloadWindow: true
 });
 
 mb.on('ready', () => {
