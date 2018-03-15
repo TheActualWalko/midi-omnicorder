@@ -1,10 +1,10 @@
 {
-  "name": "midi-omnicorder",
+  "name": "MIDICatch",
   "version": "1.0.0",
   "description": "Background task records all midi input, 24/7",
-  "main": "index.js",
+  "main": "app/index.js",
   "scripts": {
-    "start": "electron index.js",
+    "start": "electron app/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,8 +18,7 @@
   },
   "homepage": "https://github.com/TheActualWalko/midi-omnicorder#readme",
   "dependencies": {
-    "electron": "^1.8.2",
-    "forever": "^0.15.3",
+    "electron": "^2.0.0-beta.3",
     "jquery": "^3.3.1",
     "json-midi-encoder-worker": "^2.1.14",
     "menubar": "^5.2.3",
@@ -27,5 +26,8 @@
     "moment": "^2.20.1",
     "recursive-readdir": "^2.2.2",
     "usb-detection": "^2.1.0"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0"
   }
 }

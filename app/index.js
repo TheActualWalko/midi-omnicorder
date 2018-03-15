@@ -49,10 +49,9 @@ const sortFiles = (a, b) => {
   }
 }
 
-const getFiles = () => readdir('./output')
+const getFiles = () => readdir(Path.join(__dirname, 'output'))
   .then((files) => files
     .filter((f) => Path.extname(f) === '.mid')
-    .map((f) => Path.join(__dirname, f))
     .map((fullPath) => ({
       filename: Path.basename(fullPath),
       path: fullPath,
@@ -69,7 +68,8 @@ const sendState = (sender) => {
       recordingStartTime,
       files
     });
-  });
+  })
+  .catch(e => console.error(e));
 }
 
 mb.on('after-create-window', () => {
