@@ -1,24 +1,27 @@
 const writeMIDI = require('./writeMIDI');
 
 class MIDIEventLog {
-  constructor(writeTimeout) {
+  constructor(midiDir, tempo, writeTimeout) {
+    this.midiDir = midiDir;
     this.writeTimeout = writeTimeout;
     this.eventLog = {};
-    this.setTempo(60);
+    this.setTempo(tempo);
   }
   setTempo(tempo) {
+    this.tempo = tempo;
     this.ticksPerBeat = 480;
     this.beatsPerSecond = tempo / 60;
-    this.ticksPerSecond = this.ticksPerBeat / this.beatsPerSecond;
+    this.ticksPerSecond = this.ticksPerBeat * this.beatsPerSecond;
     this.writeAndFlush();
   }
   writeAndFlush() {
+    this.lastEventTime = null;
     if (Object.keys(this.eventLog).length > 0) {
-      writeMIDI(this.eventLog, this.ticksPerBeat);
+      writeMIDI(this.midiDir, this.tempo, this.eventLog, this.ticksPerBeat);
     }
     this.eventLog = {}
   }
-  receiveEvent({name, deltaTime, message}) {
+  receiveEvent({name, message}) {
     const now = new Date().getTime();
     if (!this.eventLog[name]) this.eventLog[name] = [];
     this.eventLog[name].push({

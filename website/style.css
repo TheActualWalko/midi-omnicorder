@@ -34,9 +34,13 @@ header h1 {
   font-size: 0;
 }
 
+section {
+  padding: 40px 60px;
+}
+
 .hero {
-  background-image: url(background.jpg);
   padding: 0 60px;
+  background-image: url(background.jpg);
   background-size: cover;
   background-position: 50% 57%;
   position: relative;
@@ -118,7 +122,7 @@ header h1 {
   padding-bottom: 100px;
 }
 
-button {
+.button {
   padding: 10px 20px;
   border: 2px solid white;
   border-radius: 5px;
@@ -126,26 +130,62 @@ button {
   font-weight: 700;
   background-color: transparent;
   color: white;
+  opacity: 1;
+  position: relative;
+  top: 0px;
+  transition: opacity 0.5s ease 0.3s, top 0.2s ease-out 0.3s;
 }
 
-button + button {
+.button.hidden {
+  opacity: 0;
+  top: 20px;
+}
+
+.button + .button {
   margin-left: 20px;
 }
 
-button.highlight {
+.button.highlight {
   background-color: white;
   color: #191cb6;
   box-shadow: 0 4px 13px rgba(0,0,0,0.3);
+  transition: opacity 0.5s ease, top 0.2s ease-out;
 }
 
-button svg {
+.button svg {
   vertical-align: middle;
 }
 
-button span {
+.button span {
   display: inline-block;
   margin-top: 6px;
   margin-left: 12px;
+}
+
+section.hero {
+  color: white;
+}
+
+section {
+  color: #191cb6;
+}
+
+section h2 {
+  margin-bottom: 40px;
+}
+
+iframe {
+  width: 100%;
+  height: 700px;
+}
+
+footer {
+  padding: 0 0 40px 0;
+  background-color: #fff;
+  font-size: 14px;
+  color: #777;
+  font-weight: 500;
+  text-align: center;
 }
 
 @media screen and (max-width: 1120px) {
@@ -164,6 +204,9 @@ button span {
   .hero .download {
     padding-bottom: 80px;
   }
+  iframe {
+    height: 500px;
+  }
 }
 
 .mobile-img {
@@ -175,6 +218,9 @@ button span {
     position: absolute;
     left: 585px;
     width: 350px;
+  }
+  iframe {
+    height: 400px;
   }
 }
 
@@ -197,11 +243,17 @@ button span {
     height: auto;
     margin: 0 auto;
   }
+  iframe {
+    height: 350px;
+  }
 }
 
 @media screen and (max-width: 620px) {
   .hero {
     padding: 0 30px;
+  }
+  section {
+    padding: 40px 30px;
   }
   .hero header {
     padding: 30px 0 60px 0;
@@ -209,14 +261,17 @@ button span {
   br {
     display: none;
   }
-  button {
+  .button {
     display: block;
     max-width: 320px;
     width: 100%;
     margin: 0 auto;
   }
-  button+button {
+  .button+.button {
     margin: 20px auto 0 auto;
+  }
+  iframe {
+    height: 300px;
   }
 }
 
@@ -229,10 +284,13 @@ button span {
     position: relative;
     left: -10%;
   }
-  button svg {
+  .button svg {
     margin: 0 auto;
   }
-  button span {
+  .button span {
     display: block;
+  }
+  iframe {
+    height: 200px;
   }
 }

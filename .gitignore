@@ -3,3 +3,4 @@ app/output/*
 website/downloads/*
 packages/*
 evil-plans.txt
+*.zip

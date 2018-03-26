@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { encode } = require('./json-midi-encoder-hax/module');
 const parseMidiEvent = require('./parseMidiEvent');
 
@@ -12,38 +13,23 @@ const hasNoteEvent = (events) => {
   return found;
 }
 
-module.exports = (eventLog, ticksPerBeat) => {
+module.exports = (midiDir, tempo, eventLog, ticksPerBeat) => {
   Object.keys(eventLog).forEach((name) => {
     const events = [];
-    const filtered = eventLog[name].filter((e) => {
-      if (
-        (e.message[0] >= 0xD0 && e.message[0] <= 0xDF) // monophonic aftertouch (TODO)
-        ||
-        (e.message[0] >= 0xA0 && e.message[0] <= 0xAF) // polyphonic aftertouch (TODO)
-        ||
-        (e.message[0] >= 0xB0 && e.message[0] <= 0xBF) // control mode changes (leave these out)
-        ||
-        (e.message[0] >= 0xF0) // system messages (leave these out)
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    });
 
-    if (filtered.length === 0 || !hasNoteEvent(filtered)) {
+    if (eventLog[name].length === 0 || !hasNoteEvent(eventLog[name])) {
       return;
     }
 
-    console.log(filtered);
+    console.log(eventLog[name]);
 
     let lastEvent = null;
-    filtered.forEach((e) => {
+    eventLog[name].forEach((e) => {
       // skip unwriteable midi events
 
       const result = parseMidiEvent(e.message, 0, lastEvent);
       events.push({
-        delta: e.deltaTime,
+        delta: Math.round(e.deltaTime),
         channel: 0,
         ...result.event
       });
@@ -72,8 +58,8 @@ module.exports = (eventLog, ticksPerBeat) => {
         ]
       ]
     };
-    const path = `output/${name}_${new Date().getTime()}.mid`;
-    fs.writeFileSync(path, Buffer.from(encode(output)));
-    console.log('wrote file to', path);
+    const outputFile = path.join(midiDir, `${name}_${new Date().getTime()}_${tempo}bpm.mid`);
+    fs.writeFileSync(outputFile, Buffer.from(encode(output)));
+    console.log('wrote file to', outputFile);
   });
 };

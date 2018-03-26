@@ -7,23 +7,6 @@ const usbDetect = require('usb-detection');
 const MIDIListener = require('./MIDIListener');
 const MIDIEventLog = require('./MIDIEventLog');
 
-const midiEventLog = new MIDIEventLog(5000);
-const midiListener = new MIDIListener((event) => midiEventLog.receiveEvent(event));
-
-usbDetect.startMonitoring();
-usbDetect.on('add', () => setTimeout(() => midiListener.updateInputs(), 1500));
-usbDetect.on('remove', () => setTimeout(() => midiListener.updateInputs(), 1500));
-
-// electron spinup
-const TRANSPORT_STATUS = {
-  IDLE: 'IDLE',
-  RECORDING: 'RECORDING',
-  STOPPED: 'STOPPED'
-};
-transportStatus = TRANSPORT_STATUS.RECORDING;
-recordingStartTime = Date.now();
-
-
 const mb = menubar({
   icon: Path.join(__dirname, 'icons/menu.png'),
   index: Path.join('file://', __dirname, 'renderer/index.html'),
@@ -31,6 +14,29 @@ const mb = menubar({
   height: 402,
   preloadWindow: true
 });
+
+const MIDI_DIR = Path.join(mb.app.getPath('documents'), 'MIDICatch Recordings');
+const TEMPO_BPM = 120;
+const WRITE_TIMEOUT_MS = 5000;
+
+if (!fs.existsSync(MIDI_DIR)) {
+  fs.mkdirSync(MIDI_DIR);
+}
+
+const midiEventLog = new MIDIEventLog(MIDI_DIR, TEMPO_BPM, WRITE_TIMEOUT_MS);
+const midiListener = new MIDIListener((event) => midiEventLog.receiveEvent(event));
+
+usbDetect.startMonitoring();
+usbDetect.on('add', () => setTimeout(() => midiListener.updateInputs(), 1500));
+usbDetect.on('remove', () => setTimeout(() => midiListener.updateInputs(), 1500));
+
+const TRANSPORT_STATUS = {
+  IDLE: 'IDLE',
+  RECORDING: 'RECORDING',
+  STOPPED: 'STOPPED'
+};
+transportStatus = TRANSPORT_STATUS.RECORDING;
+recordingStartTime = Date.now();
 
 mb.on('show', () => mb.tray.setImage(Path.join(__dirname, 'icons/menu-focus.png')));
 mb.on('hide', () => mb.tray.setImage(Path.join(__dirname, 'icons/menu.png')));
@@ -49,7 +55,7 @@ const sortFiles = (a, b) => {
   }
 }
 
-const getFiles = () => readdir(Path.join(__dirname, 'output'))
+const getFiles = () => readdir(MIDI_DIR)
   .then((files) => files
     .filter((f) => Path.extname(f) === '.mid')
     .map((fullPath) => ({
@@ -104,7 +110,7 @@ mb.on('after-create-window', () => {
     clearInterval(stateInterval);
   });
   ipcMain.on('open-midi-folder', (event, arg) => {
-    shell.openItem(Path.join(__dirname, 'output'))
+    shell.openItem(MIDI_DIR)
   });
 });
 
