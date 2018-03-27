@@ -44,10 +44,25 @@ const preciseTimeAgo = (now, date) => {
   return `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
+const shortenFilename = (filename) => {
+  if (filename.length > 30) {
+    const split = filename.split('_');
+    const bpmPart = split[split.length - 1];
+    const hashPart = split[split.length - 2];
+    let rest = split.slice(0, -2).join('_');
+    while ((rest + '...' + bpmPart).length > 30) {
+      rest = rest.slice(0, -1);
+    }
+    return rest + '...' + bpmPart;
+  } else {
+    return filename;
+  }
+}
+
 const makeFileListItem = (now, {filename, dateCreated, path}) => `
   <li>
     <img src='../icons/midi@2x.png' />
-    <span class='file-name'>${filename}</span>
+    <span class='file-name'>${shortenFilename(filename)}</span>
     <span class='date-created'>${friendlyDate(now, dateCreated)}</span>
     <div class='file-dragger' data-path='${path}' draggable='true'></div>
   </li>
