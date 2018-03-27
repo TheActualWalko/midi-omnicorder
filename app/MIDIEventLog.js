@@ -15,6 +15,7 @@ class MIDIEventLog {
     this.writeAndFlush();
   }
   writeAndFlush() {
+    if (this.timeout) clearTimeout(this.timeout);
     this.lastEventTime = null;
     if (Object.keys(this.eventLog).length > 0) {
       writeMIDI(this.midiDir, this.tempo, this.eventLog, this.ticksPerBeat);

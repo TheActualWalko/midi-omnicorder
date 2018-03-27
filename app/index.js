@@ -38,7 +38,10 @@ const TRANSPORT_STATUS = {
 transportStatus = TRANSPORT_STATUS.RECORDING;
 recordingStartTime = Date.now();
 
-mb.on('show', () => mb.tray.setImage(Path.join(__dirname, 'icons/menu-focus.png')));
+mb.on('show', () => {
+  mb.tray.setImage(Path.join(__dirname, 'icons/menu-focus.png'));
+  midiEventLog.writeAndFlush();
+});
 mb.on('hide', () => mb.tray.setImage(Path.join(__dirname, 'icons/menu.png')));
 
 const sortFiles = (a, b) => {
