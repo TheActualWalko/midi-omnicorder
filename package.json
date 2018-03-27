@@ -16,18 +16,5 @@
   "bugs": {
     "url": "https://github.com/TheActualWalko/midi-omnicorder/issues"
   },
-  "homepage": "https://github.com/TheActualWalko/midi-omnicorder#readme",
-  "dependencies": {
-    "electron": "^2.0.0-beta.3",
-    "jquery": "^3.3.1",
-    "json-midi-encoder-worker": "^2.1.14",
-    "menubar": "^5.2.3",
-    "midi": "^0.9.5",
-    "moment": "^2.20.1",
-    "recursive-readdir": "^2.2.2",
-    "usb-detection": "^2.1.0"
-  },
-  "devDependencies": {
-    "babel": "^6.23.0"
-  }
+  "homepage": "https://github.com/TheActualWalko/midi-omnicorder#readme"
 }
