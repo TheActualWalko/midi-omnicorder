@@ -3,6 +3,15 @@ const path = require('path');
 const { encode } = require('./json-midi-encoder-hax/module');
 const parseMidiEvent = require('./parseMidiEvent');
 
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const randomName = () => {
+  let output = '';
+  for (let i = 0; i < 8; i ++) {
+    output += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return output;
+}
+
 const hasNoteEvent = (events) => {
   let found = false;
   events.forEach((e) => {
@@ -58,7 +67,7 @@ module.exports = (midiDir, tempo, eventLog, ticksPerBeat) => {
         ]
       ]
     };
-    const outputFile = path.join(midiDir, `${name}_${new Date().getTime()}_${tempo}bpm.mid`);
+    const outputFile = path.join(midiDir, `${name}_${randomName()}_${tempo}bpm.mid`);
     fs.writeFileSync(outputFile, Buffer.from(encode(output)));
     console.log('wrote file to', outputFile);
   });
