@@ -1,4 +1,4 @@
-const { ipcMain, shell } = require('electron');
+const { ipcMain, shell, app, systemPreferences } = require('electron');
 const readdir = require('recursive-readdir');
 const Path = require('path');
 const fs = require('fs');
@@ -8,10 +8,10 @@ const MIDIListener = require('./MIDIListener');
 const MIDIEventLog = require('./MIDIEventLog');
 
 const mb = menubar({
-  icon: Path.join(__dirname, 'icons/menu.png'),
+  icon: Path.join(__dirname, systemPreferences.isDarkMode() ? 'icons/menu-on-dark.png' : 'icons/menu.png'),
   index: Path.join('file://', __dirname, 'renderer/index.html'),
   width: 480,
-  height: 402,
+  height: 435,
   preloadWindow: true
 });
 
@@ -38,11 +38,13 @@ const TRANSPORT_STATUS = {
 transportStatus = TRANSPORT_STATUS.RECORDING;
 recordingStartTime = Date.now();
 
+
+
 mb.on('show', () => {
   mb.tray.setImage(Path.join(__dirname, 'icons/menu-focus.png'));
   midiEventLog.writeAndFlush();
 });
-mb.on('hide', () => mb.tray.setImage(Path.join(__dirname, 'icons/menu.png')));
+mb.on('hide', () => mb.tray.setImage(Path.join(__dirname, systemPreferences.isDarkMode() ? 'icons/menu-on-dark.png' : 'icons/menu.png')));
 
 const sortFiles = (a, b) => {
   if (a.dateCreated < b.dateCreated) {
@@ -73,6 +75,7 @@ const getFiles = () => readdir(MIDI_DIR)
 const sendState = (sender) => {
   getFiles().then((files) => {
     sender.send('state', {
+      tempo: midiEventLog.tempo,
       transportStatus,
       recordingStartTime,
       files
@@ -82,7 +85,6 @@ const sendState = (sender) => {
 }
 
 mb.on('after-create-window', () => {
-  // mb.window.openDevTools();
   let stateInterval;
   ipcMain.on('initialize', (event, arg) => {
     sendState(event.sender);
@@ -98,14 +100,18 @@ mb.on('after-create-window', () => {
     transportStatus = TRANSPORT_STATUS.STOPPED;
     midiListener.disableRecording();
   });
-  ipcMain.on('ondragstart', (event, arg) => {
-    ipcMain.on('ondragstart', (event, path) => {
-      event.sender.startDrag({
-        file: path,
-        icon: Path.join(__dirname, 'icons/midi.png')
-      })
+  ipcMain.on('ondragstart', (event, path) => {
+    event.sender.startDrag({
+      file: path,
+      icon: Path.join(__dirname, 'icons/midi.png')
     })
   });
+  ipcMain.on('set-tempo', (event, arg) => {
+    midiEventLog.setTempo(arg);
+  });
+  ipcMain.on('hide-window', (event, arg) => {
+    mb.hideWindow();
+  })
   ipcMain.on('quit', (event, arg) => {
     mb.app.quit();
     usbDetect.stopMonitoring();

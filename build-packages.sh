@@ -1,3 +1,5 @@
 #!/bin/bash
+# add this to enable windows:
+# && electron-packager ./app --platform=win32 --arch=ia32 --out=packages --overwrite && zip -r website-downloads/MIDICatch-win32-ia32.zip packages/MIDICatch-win32-ia32
 
-electron-packager ./app --platform=darwin --arch=x64 --out=packages --overwrite && electron-packager ./app --platform=win32 --arch=ia32 --out=packages --overwrite
+rm website-downloads/* && electron-packager ./app --platform=darwin --arch=x64 --out=packages --overwrite && zip -r website-downloads/MIDICatch-darwin-x64.zip packages/MIDICatch-darwin-x64

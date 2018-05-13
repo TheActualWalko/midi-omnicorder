@@ -96,6 +96,7 @@ $(() => {
   let currentFiles = [];
   let transportStatus = TRANSPORT_STATUS.IDLE;
   let recordingStartTime;
+  let currentTempo;
 
   // Event listeners
 
@@ -104,6 +105,16 @@ $(() => {
   $("#file-list").on('click dragstart', '.file-dragger', (e) => {
     e.preventDefault();
     ipcRenderer.send('ondragstart', $(e.currentTarget).attr('data-path'));
+  });
+  $("#tempo").on('blur', (e) => {
+    const nextTempo = Number($("#tempo").val());
+    ipcRenderer.send('set-tempo', nextTempo);
+    $("#tempo").val(nextTempo.toFixed(2));
+  });
+  $("#tempo").on('keypress', (e) => {
+    if (e.which === 13) { // enter
+      $("#tempo").blur();
+    }
   });
 
   // State changes
@@ -114,6 +125,10 @@ $(() => {
     currentFiles = payload.files;
     transportStatus = payload.transportStatus;
     recordingStartTime = payload.recordingStartTime;
+    if (payload.tempo !== currentTempo) {
+      currentTempo = payload.tempo;
+      $("#tempo").val(currentTempo.toFixed(2));
+    }
 
     if (transportStatus === TRANSPORT_STATUS.IDLE) {
 

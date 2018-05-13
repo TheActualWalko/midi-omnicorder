@@ -30,12 +30,8 @@ module.exports = (midiDir, tempo, eventLog, ticksPerBeat) => {
       return;
     }
 
-    console.log(eventLog[name]);
-
     let lastEvent = null;
     eventLog[name].forEach((e) => {
-      // skip unwriteable midi events
-
       const result = parseMidiEvent(e.message, 0, lastEvent);
       events.push({
         delta: Math.round(e.deltaTime),

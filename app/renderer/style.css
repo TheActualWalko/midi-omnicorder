@@ -50,6 +50,20 @@ li.disabled:hover {
   background-color: #ffffff;
 }
 
+input {
+  border: none;
+  background-color: rgba(0,0,0,0.1);
+  width: 60px;
+  box-sizing: content-box;
+  font-family: inherit;
+  font-color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 2px 4px;
+  margin-top: -3px;
+  margin-bottom: -3px;
+}
+
 .files {
   overflow: hidden;
   height: 271px;

@@ -16,7 +16,7 @@ class MIDIListener {
           ||
           (message[0] >= 0xA0 && message[0] <= 0xAF) // polyphonic aftertouch (TODO)
           ||
-          (message[0] >= 0xB0 && message[0] <= 0xBF) // control mode changes (leave these out)
+          (message[0] >= 0xB6 && message[0] <= 0xBF) // control mode changes, except for musical pedals (leave these out)
           ||
           (message[0] >= 0xF0) // system messages (leave these out)
         ) {
